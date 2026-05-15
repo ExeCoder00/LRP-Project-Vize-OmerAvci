@@ -1,26 +1,54 @@
+using LabYonetimSistemi.Data;
 using LabYonetimSistemi.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "LabYonetimSistemi", Version = "v1" });
+});
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LabYonetimSistemi v1");
+});
+
 var pcListesi = new List<Computer>
 {
     new Computer { Id = 1, Brand = "Monster", Ram = 16, HasIssue = false },
     new Computer { Id = 2, Brand = "Lenovo", Ram = 8, HasIssue = true }
 };
-app.MapGet("/api/bilgisayarlar", () => pcListesi);
+
+app.MapGet("/api/bilgisayarlar", async (AppDbContext context) => {
+    return await context.Computers.ToListAsync();
+});
+
 app.MapGet("/api/arizali-pcler", () =>
     pcListesi.Where(x => x.HasIssue == true).ToList());
+
 app.MapGet("/api/bilgisayar/{id}", (int id) => {
     var bulunan = pcListesi.Find(x => x.Id == id);
     return bulunan;
 });
-app.MapPost("/api/bilgisayar-ekle", (Computer yeniPc) => {
-    pcListesi.Add(yeniPc);
-    return $"Yeni bilgisayar ({yeniPc.Brand}) baþarýyla eklendi!";
+
+app.MapPost("/api/bilgisayar-ekle", async (AppDbContext context, Computer yeniPc) => {
+    context.Computers.Add(yeniPc);
+    await context.SaveChangesAsync();
+    return Results.Ok(yeniPc);
 });
+
 app.MapGet("/api/lab-istatistik", () => {
     var gucluPcler = pcListesi.Where(p => p.Ram > 8).ToList();
     var siraliPcler = pcListesi.OrderBy(p => p.Brand).ToList();
@@ -42,6 +70,7 @@ app.MapGet("/api/lab-istatistik", () => {
         RameSiraliListe = rameSirali
     };
 });
+
 app.MapPost("/api/ariza-bildir", (int pcId) => {
     var bulunanPc = pcListesi.FirstOrDefault(x => x.Id == pcId);
     if (bulunanPc == null)
@@ -67,4 +96,5 @@ app.MapPost("/api/ariza-bildir", (int pcId) => {
         Indeks = pcListesi.IndexOf(bulunanPc)
     });
 });
+
 app.Run();
