@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Lab Yönetim Sistemi</title>
+    <style>
+        .pc-kart {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+        }
+
+        .arizali {
+            background-color: #ffcccc;
+        }
+
+        .saglam {
+            background-color: #ccffcc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Laboratuvar Bilgisayar Durumları</h1>
+    <button onclick="verileriYukle()">Listeyi Yenile</button>
+    <div id="listeKonumu"></div>
+
+    <script>
+        async function verileriYukle() {
+            const response = await fetch("/api/bilgisayarlar");
+            const veriler = await response.json();
+            const div = document.getElementById("listeKonumu");
+            div.innerHTML = "";
+            veriler.forEach(pc => {
+                const kart = document.createElement("div");
+                kart.className = pc.hasIssue ? "pc-kart arizali" : "pc-kart saglam";
+                kart.innerHTML = `
+                    <h3>${pc.brand}</h3>
+                    <p>RAM: ${pc.ram}GB</p>
+                    <strong>Durum: ${pc.hasIssue ? "⚠️ ARIZALI" : "✅ ÇALIŞIYOR"}</strong>
+                `;
+                div.appendChild(kart);
+            });
+        }
+        verileriYukle();
+    </script>
+</body>
+</html>

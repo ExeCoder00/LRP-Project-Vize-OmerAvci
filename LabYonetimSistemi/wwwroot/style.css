@@ -1,0 +1,38 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    color: #333;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.pc-kart {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+    width: 200px;
+    display: inline-block;
+}
+
+.arizali {
+    background-color: #ffcccc;
+    border: 3px solid red;
+}
+
+.saglam {
+    background-color: #ccffcc;
+    border: 3px solid green;
+}

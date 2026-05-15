@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 using (var scope = app.Services.CreateScope())
 {
