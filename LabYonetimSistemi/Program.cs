@@ -10,6 +10,10 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "LabYonetimSistemi", Version = "v1" });
 });
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
 var app = builder.Build();
 app.UseDefaultFiles();
@@ -88,10 +92,8 @@ app.MapGet("/api/labs", async (AppDbContext context) => {
     return await context.Labs.ToListAsync();
 });
 
-app.MapPost("/api/admin/labs", async (AppDbContext context, Lab yeniLab) => {
-    context.Labs.Add(yeniLab);
-    await context.SaveChangesAsync();
-    return Results.Ok(yeniLab);
-});
+app.MapAuthEndpoints();
+app.MapStatEndpoints();
+app.MapLabEndpoints();
 
 app.Run();
