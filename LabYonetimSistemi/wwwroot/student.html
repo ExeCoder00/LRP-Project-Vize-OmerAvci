@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>LRP Öğrenci Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+    <style>
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background: #212529;
+            position: fixed;
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .nav-link {
+            color: #adb5bd;
+            cursor: pointer;
+        }
+
+            .nav-link:hover {
+                color: white;
+                background: #343a40;
+            }
+    </style>
+</head>
+<body>
+    <div class="sidebar p-3">
+        <h4>LRP Öğrenci</h4><hr>
+        <ul class="nav flex-column gap-2">
+            <li class="nav-item"><a class="nav-link" onclick="loadBilgisayar()"><i class="fas fa-laptop me-2"></i>Bilgisayarım</a></li>
+            <li class="nav-item mt-5"><a class="nav-link text-danger" onclick="localStorage.clear(); location.href='/login.html'"><i class="fas fa-sign-out-alt me-2"></i>Çıkış</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div id="page-content">
+            <h2>Hoş Geldiniz!</h2>
+            <p>Sol menüden bilgisayarınızı görüntüleyebilirsiniz.</p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Yetki Kontrolü
+        const role = localStorage.getItem("userRole");
+        const username = localStorage.getItem("username");
+        if (!role || role !== "Student") {
+            location.href = "/login.html";
+        }
+
+        async function loadBilgisayar() {
+            const res = await fetch(`/api/admin/students/computer/${username}`);
+            if (!res.ok) {
+                document.getElementById("page-content").innerHTML = "<p class='text-danger'>Zimmetli bilgisayar bulunamadı.</p>";
+                return;
+            }
+            const pc = await res.json();
+            document.getElementById("page-content").innerHTML = `
+                <h2>Zimmetli Bilgisayarım</h2>
+                <div class="card p-4 shadow-sm">
+                    <h4>${pc.brand}</h4>
+                    <p><strong>Demirbaş Kodu:</strong> ${pc.assetCode ?? "Belirtilmemiş"}</p>
+                    <p><strong>İşlemci:</strong> ${pc.processor}</p>
+                    <p><strong>RAM:</strong> ${pc.ram} GB</p>
+                    <p><strong>HDMI:</strong> ${pc.hasHdmi ? "✅ Var" : "❌ Yok"}</p>
+                    <p><strong>İnternet:</strong> ${pc.hasInternet ? "✅ Var" : "❌ Yok"}</p>
+                    <p><strong>Veyon:</strong> ${pc.hasVeyon ? "✅ Var" : "❌ Yok"}</p>
+                </div>
+            `;
+        }
+
+        loadBilgisayar();
+    </script>
+</body>
+</html>
