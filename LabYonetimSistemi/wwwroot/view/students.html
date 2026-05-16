@@ -1,0 +1,94 @@
+﻿<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Öğrenci Yönetimi</h3>
+    <button class="btn btn-primary" onclick="openModal()">Yeni Öğrenci Ekle</button>
+</div>
+
+<table class="table table-hover bg-white shadow-sm rounded">
+    <thead class="table-dark">
+        <tr><th>ID</th><th>Ad Soyad</th><th>Sınıf</th><th>Kullanıcı Adı</th><th>Bilgisayar ID</th><th>İşlemler</th></tr>
+    </thead>
+    <tbody id="studentTableBody"></tbody>
+</table>
+
+<div class="modal fade" id="studentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Öğrenci Formu</h5></div>
+            <div class="modal-body">
+                <input type="hidden" id="studentId">
+                <input type="text" id="studentFullName" class="form-control mb-2" placeholder="Ad Soyad">
+                <input type="number" id="studentGrade" class="form-control mb-2" placeholder="Sınıf (1 veya 2)">
+                <input type="text" id="studentUsername" class="form-control mb-2" placeholder="Kullanıcı Adı (Öğrenci No)">
+                <input type="number" id="studentComputerId" class="form-control mb-2" placeholder="Bilgisayar ID">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary w-100" onclick="saveStudent()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function getStudents() {
+        const res = await fetch("/api/admin/students");
+        const students = await res.json();
+        document.getElementById("studentTableBody").innerHTML = students.map(s => `
+            <tr>
+                <td>${s.id}</td>
+                <td>${s.fullName}</td>
+                <td>${s.grade}</td>
+                <td>${s.username}</td>
+                <td>${s.computerId}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="editStudent(${s.id},'${s.fullName}',${s.grade},'${s.username}',${s.computerId})">Düzenle</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteStudent(${s.id})">Sil</button>
+                </td>
+            </tr>`).join("");
+    }
+
+    function openModal() {
+        document.getElementById("studentId").value = "";
+        document.getElementById("studentFullName").value = "";
+        document.getElementById("studentGrade").value = "";
+        document.getElementById("studentUsername").value = "";
+        document.getElementById("studentComputerId").value = "";
+        new bootstrap.Modal(document.getElementById('studentModal')).show();
+    }
+
+    function editStudent(id, fullName, grade, username, computerId) {
+        document.getElementById("studentId").value = id;
+        document.getElementById("studentFullName").value = fullName;
+        document.getElementById("studentGrade").value = grade;
+        document.getElementById("studentUsername").value = username;
+        document.getElementById("studentComputerId").value = computerId;
+        new bootstrap.Modal(document.getElementById('studentModal')).show();
+    }
+
+    async function saveStudent() {
+        const id = document.getElementById("studentId").value;
+        const method = id ? "PUT" : "POST";
+        const url = id ? `/api/admin/students/${id}` : "/api/admin/students/";
+
+        await fetch(url, {
+            method: method,
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                fullName: document.getElementById("studentFullName").value,
+                grade: parseInt(document.getElementById("studentGrade").value),
+                username: document.getElementById("studentUsername").value,
+                computerId: parseInt(document.getElementById("studentComputerId").value)
+            })
+        });
+        bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
+        getStudents();
+    }
+
+    async function deleteStudent(id) {
+        if(confirm("Silmek istediğinize emin misiniz?")) {
+            await fetch("/api/admin/students/"+id, { method: "DELETE" });
+            getStudents();
+        }
+    }
+
+    getStudents();
+</script>

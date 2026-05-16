@@ -95,5 +95,7 @@ app.MapGet("/api/labs", async (AppDbContext context) => {
 app.MapAuthEndpoints();
 app.MapStatEndpoints();
 app.MapLabEndpoints();
+app.MapPcEndpoints();
+app.MapStudentEndpoints();
 
 app.Run();

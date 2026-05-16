@@ -1,0 +1,17 @@
+﻿# Build klasörleri
+bin/
+obj/
+
+# Veritabanı dosyası
+*.db
+*.db-shm
+*.db-wal
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# NuGet
+packages/
+*.nupkg
