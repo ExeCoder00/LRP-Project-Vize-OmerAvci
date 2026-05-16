@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/LabYonetimSistemi/laboratuvar.db
+/LabYonetimSistemi/laboratuvar.db
+/LabYonetimSistemi/laboratuvar.db
