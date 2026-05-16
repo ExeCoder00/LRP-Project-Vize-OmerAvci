@@ -128,6 +128,7 @@ Tüm endpoint'lerin test edilebileceği API dokümantasyonu.
 ------------------
 ## Proje Yapısı
 
+```
 LabYonetimSistemi/
 ├── Data/              AppDbContext
 ├── Endpoints/         Auth, Lab, PC, Student, Issue endpoint'leri
@@ -140,3 +141,4 @@ LabYonetimSistemi/
 │   ├── login.html     Giriş ekranı
 │   └── style.css      Ortak stiller
 └── Program.cs         Uygulama yapılandırması
+```
