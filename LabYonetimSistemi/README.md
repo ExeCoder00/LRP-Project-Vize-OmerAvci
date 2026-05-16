@@ -1,4 +1,4 @@
-﻿# LRP - Laboratuvar Kaynak Planlama Sistemi
+# LRP - Laboratuvar Kaynak Planlama Sistemi
 
 **2025-2026 Bahar Dönemi Vize Ödevi | Ömer Avcı**
 
@@ -75,6 +75,7 @@ Lab ekleme, düzenleme, silme ve detay görüntüleme.
 <img width="622" height="431" alt="image" src="https://github.com/user-attachments/assets/005a1bd7-5690-45bd-8a07-98a7a3b366c0" />
 <img width="1002" height="845" alt="image" src="https://github.com/user-attachments/assets/440d9bd5-ee31-49f7-bca0-a5b25fb1bdad" />
 
+
 <img width="633" height="498" alt="image" src="https://github.com/user-attachments/assets/85c24e59-a836-460b-ba69-1c114a3e3711" />
 <img width="1575" height="330" alt="image" src="https://github.com/user-attachments/assets/9a25f8f7-1577-4c7b-8b33-8d8183661bc6" />
 
@@ -127,51 +128,16 @@ Tüm endpoint'lerin test edilebileceği API dokümantasyonu.
 
 ------------------
 ## Proje Yapısı
-```
+
 LabYonetimSistemi/
-│
-├── Data/
-│   └── AppDbContext.cs              # EF Core veritabanı bağlantısı ve DbSet tanımları
-│
-├── Endpoints/
-│   ├── AuthEndpoints.cs             # Login ve rol bazlı giriş işlemleri
-│   ├── LabEndpoints.cs              # Laboratuvar CRUD işlemleri
-│   ├── PcEndpoints.cs               # Bilgisayar CRUD ve AssetCode üretimi
-│   ├── StudentEndpoints.cs          # Öğrenci atama ve öğrenci portalı işlemleri
-│   ├── IssueEndpoints.cs            # Arıza / sorun kayıt işlemleri
-│   └── StatEndpoints.cs             # Dashboard istatistik endpointleri
-│
-├── Migrations/
-│   └── ...                          # EF Core Code-First migration dosyaları
-│
-├── Models/
-│   ├── Computer.cs                  # Bilgisayar modeli
-│   ├── Issue.cs                     # Arıza / sorun modeli
-│   ├── Lab.cs                       # Laboratuvar modeli
-│   ├── Software.cs                  # Yazılım modeli
-│   ├── Student.cs                   # Öğrenci modeli
-│   └── User.cs                      # Kullanıcı ve rol modeli
-│
+├── Data/              AppDbContext
+├── Endpoints/         Auth, Lab, PC, Student, Issue endpoint'leri
+├── Migrations/        EF Core migration'ları
+├── Models/            Computer, Lab, Student, User, Issue
 ├── wwwroot/
-│   ├── view/
-│   │   ├── dashboard.html           # Admin dashboard içerik sayfası
-│   │   ├── labs.html                # Laboratuvar yönetim sayfası
-│   │   ├── computers.html           # Bilgisayar yönetim sayfası
-│   │   ├── students.html            # Öğrenci / zimmet yönetim sayfası
-│   │   ├── issues.html              # Arıza kayıt ve takip sayfası
-│   │   └── lab-detail.html          # Laboratuvar detay sayfası
-│   │
-│   ├── admin.html                   # Admin panel ana sayfası / SPA şablonu
-│   ├── index.html                   # Admin yönlendirme / ana giriş sayfası
-│   ├── login.html                   # Kullanıcı giriş ekranı
-│   ├── student.html                 # Öğrenci portalı
-│   └── style.css                    # Ortak CSS stilleri
-│
-├── .gitignore                       # bin, obj ve .db gibi dosyaları hariç tutar
-├── appsettings.json                 # Uygulama ayarları
-├── LabYonetimSistemi.http           # API test istekleri
-├── Program.cs                       # Uygulama başlangıç ve endpoint kayıtları
-└── README.md                        # Proje açıklaması ve çalıştırma bilgileri
-```
- 
-Page Application (SPA) mimarisi
+│   ├── view/          dashboard, labs, computers, students, issues, lab-detail
+│   ├── index.html     Admin SPA
+│   ├── student.html   Öğrenci portalı
+│   ├── login.html     Giriş ekranı
+│   └── style.css      Ortak stiller
+└── Program.cs         Uygulama yapılandırması
