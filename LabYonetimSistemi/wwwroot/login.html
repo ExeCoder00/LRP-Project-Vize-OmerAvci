@@ -49,6 +49,7 @@
             color: #6c757d;
             border: none;
             padding: 10px 20px;
+            cursor: pointer;
         }
 
             .nav-tabs .nav-link.active {
@@ -90,12 +91,12 @@
         <div class="login-body">
             <ul class="nav nav-tabs mb-4" id="loginTabs">
                 <li class="nav-item w-50 text-center">
-                    <a class="nav-link active" id="admin-tab" href="#" onclick="switchTab('admin')">
+                    <a class="nav-link active" id="admin-tab" href="javascript:void(0)" onclick="switchTab('admin')">
                         <i class="fas fa-user-shield me-1"></i>Admin
                     </a>
                 </li>
                 <li class="nav-item w-50 text-center">
-                    <a class="nav-link" id="student-tab" href="#" onclick="switchTab('student')">
+                    <a class="nav-link" id="student-tab" href="javascript:void(0)" onclick="switchTab('student')">
                         <i class="fas fa-user-graduate me-1"></i>Öğrenci
                     </a>
                 </li>
