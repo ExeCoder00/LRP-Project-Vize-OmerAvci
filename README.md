@@ -173,3 +173,4 @@ LabYonetimSistemi/
 ├── Program.cs                       # Uygulama başlangıç ve endpoint kayıtları
 └── README.md                        # Proje açıklaması ve çalıştırma bilgileri
 ```
+ 
