@@ -75,7 +75,7 @@ Lab ekleme, düzenleme, silme ve detay görüntüleme.
 <img width="622" height="431" alt="image" src="https://github.com/user-attachments/assets/005a1bd7-5690-45bd-8a07-98a7a3b366c0" />
 <img width="1002" height="845" alt="image" src="https://github.com/user-attachments/assets/440d9bd5-ee31-49f7-bca0-a5b25fb1bdad" />
 
----Bilgisayar düzenleme
+
 <img width="633" height="498" alt="image" src="https://github.com/user-attachments/assets/85c24e59-a836-460b-ba69-1c114a3e3711" />
 <img width="1575" height="330" alt="image" src="https://github.com/user-attachments/assets/9a25f8f7-1577-4c7b-8b33-8d8183661bc6" />
 
