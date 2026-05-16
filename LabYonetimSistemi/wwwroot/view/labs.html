@@ -50,7 +50,10 @@
                 <td><span class="badge bg-secondary">${l.id}</span></td>
                 <td><strong>${l.name}</strong></td>
                 <td><span class="badge bg-primary">${l.pcSayisi ?? 0} PC</span></td>
-                <td>
+                <td style="white-space:nowrap;">
+                    <button class="btn btn-sm btn-outline-info me-1" onclick="showLabDetail(${l.id})">
+                        <i class="fas fa-eye"></i> Detay
+                    </button>
                     <button class="btn btn-sm btn-outline-warning me-1" onclick="editLab(${l.id},'${l.name}')">
                         <i class="fas fa-edit"></i> Düzenle
                     </button>
@@ -59,6 +62,22 @@
                     </button>
                 </td>
             </tr>`).join("");
+    }
+
+    function showLabDetail(labId) {
+        window.currentLabId = labId;
+        const mainContent = document.getElementById("page-content") || document.querySelector(".main-content div");
+        fetch("/view/lab-detail.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("page-content").innerHTML = html;
+                const scripts = document.getElementById("page-content").querySelectorAll("script");
+                scripts.forEach(s => {
+                    const newS = document.createElement("script");
+                    newS.text = s.text;
+                    document.body.appendChild(newS).parentNode.removeChild(newS);
+                });
+            });
     }
 
     function openModal() {

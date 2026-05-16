@@ -10,5 +10,6 @@ public class Computer
     public bool HasHdmi { get; set; }
     public bool HasInternet { get; set; }
     public bool HasVeyon { get; set; }
+    public string Type { get; set; } = "Masaüstü"; // Laptop veya Masaüstü
     public int LabId { get; set; }
 }

@@ -13,7 +13,7 @@
                 <th>Ad Soyad</th>
                 <th>Sınıf</th>
                 <th>Kullanıcı Adı</th>
-                <th>Bilgisayar ID</th>
+                <th>Zimmetli PC'ler</th>
                 <th>İşlemler</th>
             </tr>
         </thead>
@@ -47,8 +47,12 @@
                         <input type="text" id="studentUsername" class="form-control" placeholder="Öğrenci no">
                     </div>
                     <div class="col-12">
-                        <label class="form-label text-muted small">Bilgisayar ID</label>
-                        <input type="number" id="studentComputerId" class="form-control" placeholder="Zimmetli bilgisayar ID">
+                        <label class="form-label text-muted small">Ana Bilgisayar ID</label>
+                        <input type="number" id="studentComputerId" class="form-control" placeholder="Ana zimmetli bilgisayar ID">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Ek Bilgisayar ID'leri <span class="text-muted">(virgülle ayır: 3,5,7)</span></label>
+                        <input type="text" id="studentComputerIds" class="form-control" placeholder="Örn: 3,5,7">
                     </div>
                 </div>
             </div>
@@ -72,9 +76,13 @@
                 <td><strong>${s.fullName}</strong></td>
                 <td><span class="badge bg-info text-dark">${s.grade}. Sınıf</span></td>
                 <td><code>${s.username}</code></td>
-                <td><span class="badge bg-primary">PC #${s.computerId}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(${s.id},'${s.fullName}',${s.grade},'${s.username}',${s.computerId})">
+                    <span class="badge bg-primary">PC #${s.computerId}</span>
+                    ${s.computerIds ? s.computerIds.split(',').filter(x => x.trim()).map(id =>
+            `<span class="badge bg-secondary ms-1">PC #${id.trim()}</span>`).join('') : ''}
+                </td>
+                <td style="white-space:nowrap;">
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(${s.id},'${s.fullName}',${s.grade},'${s.username}',${s.computerId},'${s.computerIds ?? ''}')">
                         <i class="fas fa-edit"></i> Düzenle
                     </button>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(${s.id})">
@@ -90,15 +98,17 @@
         document.getElementById("studentGrade").value = "1";
         document.getElementById("studentUsername").value = "";
         document.getElementById("studentComputerId").value = "";
+        document.getElementById("studentComputerIds").value = "";
         new bootstrap.Modal(document.getElementById('studentModal')).show();
     }
 
-    function editStudent(id, fullName, grade, username, computerId) {
+    function editStudent(id, fullName, grade, username, computerId, computerIds) {
         document.getElementById("studentId").value = id;
         document.getElementById("studentFullName").value = fullName;
         document.getElementById("studentGrade").value = grade;
         document.getElementById("studentUsername").value = username;
         document.getElementById("studentComputerId").value = computerId;
+        document.getElementById("studentComputerIds").value = computerIds;
         new bootstrap.Modal(document.getElementById('studentModal')).show();
     }
 
@@ -113,7 +123,8 @@
                 fullName: document.getElementById("studentFullName").value,
                 grade: parseInt(document.getElementById("studentGrade").value),
                 username: document.getElementById("studentUsername").value,
-                computerId: parseInt(document.getElementById("studentComputerId").value)
+                computerId: parseInt(document.getElementById("studentComputerId").value),
+                computerIds: document.getElementById("studentComputerIds").value
             })
         });
         bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();

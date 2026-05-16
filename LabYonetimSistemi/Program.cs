@@ -23,6 +23,17 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    // Admin yoksa otomatik oluþtur
+    if (!db.Users.Any(u => u.Username == "admin"))
+    {
+        db.Users.Add(new User
+        {
+            Username = "admin",
+            Password = "admin123",
+            Role = "Admin"
+        });
+        db.SaveChanges();
+    }
 }
 
 app.UseSwagger();
@@ -97,5 +108,6 @@ app.MapStatEndpoints();
 app.MapLabEndpoints();
 app.MapPcEndpoints();
 app.MapStudentEndpoints();
+app.MapIssueEndpoints();
 
 app.Run();

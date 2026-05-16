@@ -16,7 +16,7 @@
         <ul class="nav flex-column gap-1 mt-3">
             <li class="nav-item">
                 <a class="nav-link" onclick="loadBilgisayar()">
-                    <i class="fas fa-laptop me-2"></i>Bilgisayarım
+                    <i class="fas fa-laptop me-2"></i>Bilgisayarlarım
                 </a>
             </li>
             <li class="nav-item" style="position:absolute; bottom:20px; width:100%;">
@@ -43,7 +43,7 @@
         document.getElementById("welcomeUser").innerHTML = `<i class="fas fa-user me-1"></i>${username}`;
 
         async function loadBilgisayar() {
-            const res = await fetch(`/api/admin/students/computer/${username}`);
+            const res = await fetch(`/api/admin/students/computers/${username}`);
             if (!res.ok) {
                 document.getElementById("page-content").innerHTML = `
                         <div class="alert alert-danger">
@@ -52,9 +52,19 @@
                         </div>`;
                 return;
             }
-            const pc = await res.json();
+            const pcs = await res.json();
+            if (pcs.length === 0) {
+                document.getElementById("page-content").innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Henüz zimmetli bilgisayarınız yok.
+                        </div>`;
+                return;
+            }
             document.getElementById("page-content").innerHTML = `
-                    <div class="pc-card">
+                    <h5 class="mb-3"><i class="fas fa-laptop me-2"></i>Zimmetli Bilgisayarlarım (${pcs.length})</h5>
+                    ${pcs.map(pc => `
+                    <div class="pc-card mb-3">
                         <div class="pc-card-header">
                             <h5 class="mb-0"><i class="fas fa-laptop me-2"></i>${pc.brand}</h5>
                             <small style="color:rgba(255,255,255,0.6)">Demirbaş: ${pc.assetCode ?? "-"}</small>
@@ -79,10 +89,9 @@
                             <span class="text-muted"><i class="fas fa-eye me-2"></i>Veyon</span>
                             <span class="${pc.hasVeyon ? 'badge-var' : 'badge-yok'}">${pc.hasVeyon ? '✅ Var' : '❌ Yok'}</span>
                         </div>
-                    </div>`;
+                    </div>`).join('')}`;
         }
 
-        // Sayfa açılınca otomatik yükle
         loadBilgisayar();
     </script>
 </body>

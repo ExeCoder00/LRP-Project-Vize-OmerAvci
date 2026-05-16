@@ -1,0 +1,498 @@
+﻿<div class="page-header">
+    <h3 id="labTitle"><i class="fas fa-door-open me-2"></i>Lab Detayı</h3>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" onclick="openBulkAdd()">
+            <i class="fas fa-plus me-1"></i>Toplu PC Ekle
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="openBulkDelete()">
+            <i class="fas fa-trash me-1"></i>Toplu Sil
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="goBack()">
+            <i class="fas fa-arrow-left me-1"></i>Geri
+        </button>
+    </div>
+</div>
+
+<div id="labInfo" class="mb-3"></div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted fw-bold" id="pcCount"></span>
+    <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small">Göster:</span>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary" onclick="setPerPage(10, this)">10</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="setPerPage(25, this)">25</button>
+            <button class="btn btn-sm btn-outline-secondary active" onclick="setPerPage(50, this)">50</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="setPerPage(9999, this)">Tümü</button>
+        </div>
+    </div>
+</div>
+
+<div id="pcGrid" class="row g-3 mb-4"></div>
+
+<!-- Toplu PC Ekleme Modal -->
+<div class="modal fade" id="bulkAddModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#1e2a38; color:white;">
+                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Toplu PC Ekle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label text-muted small">PC Adedi</label>
+                        <input type="number" id="bulkCount" class="form-control" value="10" min="1" max="100">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Tip</label>
+                        <select id="bulkType" class="form-select">
+                            <option value="Masaüstü">🖥️ Masaüstü</option>
+                            <option value="Laptop">💻 Laptop</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Marka</label>
+                        <input type="text" id="bulkBrand" class="form-control" placeholder="Dell, HP...">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">İşlemci</label>
+                        <input type="text" id="bulkProcessor" class="form-control" placeholder="Intel i5...">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">RAM (GB)</label>
+                        <input type="number" id="bulkRam" class="form-control" value="8">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Donanım Özellikleri</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bulkHdmi" checked>
+                                <label class="form-check-label">HDMI</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bulkInternet" checked>
+                                <label class="form-check-label">İnternet</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bulkVeyon">
+                                <label class="form-check-label">Veyon</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveBulkAdd()">
+                    <i class="fas fa-plus me-1"></i>Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toplu Silme Modal -->
+<div class="modal fade" id="bulkDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#dc3545; color:white;">
+                <h5 class="modal-title"><i class="fas fa-trash me-2"></i>Toplu PC Sil</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="bulkDeleteList" class="row g-2"></div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-danger" onclick="deleteSelected()">
+                    <i class="fas fa-trash me-1"></i>Seçilenleri Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toplu Düzenleme Modal -->
+<div class="modal fade" id="bulkEditModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#1e2a38; color:white;">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Toplu PC Düzenle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small mb-3">Değiştirmek istediğiniz alanları doldurun. Boş bırakılanlar değişmez.</p>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Tip</label>
+                        <select id="bulkEditType" class="form-select">
+                            <option value="">— Değiştirme —</option>
+                            <option value="Masaüstü">🖥️ Masaüstü</option>
+                            <option value="Laptop">💻 Laptop</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Marka</label>
+                        <input type="text" id="bulkEditBrand" class="form-control" placeholder="Boş = değiştirme">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">İşlemci</label>
+                        <input type="text" id="bulkEditProcessor" class="form-control" placeholder="Boş = değiştirme">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">RAM (GB)</label>
+                        <input type="number" id="bulkEditRam" class="form-control" placeholder="Boş = değiştirme">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Donanım (işaretlenenler güncellenir)</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bulkEditHdmi">
+                                <label class="form-check-label">HDMI</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bulkEditInternet">
+                                <label class="form-check-label">İnternet</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bulkEditVeyon">
+                                <label class="form-check-label">Veyon</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p class="text-muted small">Düzenlenecek PC'ler:</p>
+                <div id="bulkEditList" class="row g-2"></div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveBulkEdit()">
+                    <i class="fas fa-save me-1"></i>Uygula
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tekli Düzenleme Modal -->
+<div class="modal fade" id="editPcModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#1e2a38; color:white;">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Bilgisayar Düzenle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="editPcId">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Tip</label>
+                        <select id="editPcType" class="form-select">
+                            <option value="Masaüstü">🖥️ Masaüstü</option>
+                            <option value="Laptop">💻 Laptop</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Marka</label>
+                        <input type="text" id="editPcBrand" class="form-control">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">İşlemci</label>
+                        <input type="text" id="editPcProcessor" class="form-control">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">RAM (GB)</label>
+                        <input type="number" id="editPcRam" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Donanım Özellikleri</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editPcHdmi">
+                                <label class="form-check-label">HDMI</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editPcInternet">
+                                <label class="form-check-label">İnternet</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editPcVeyon">
+                                <label class="form-check-label">Veyon</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveEditPc()">
+                    <i class="fas fa-save me-1"></i>Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pc-grid-card {
+        background: white;
+        border-radius: 10px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-left: 3px solid #1e2a38;
+        transition: transform 0.15s;
+        height: 100%;
+        position: relative;
+    }
+
+        .pc-grid-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .pc-grid-card .asset-code {
+            font-size: 10px;
+            color: #6c757d;
+            font-family: monospace;
+        }
+
+        .pc-grid-card .pc-brand {
+            font-weight: 700;
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .pc-grid-card .pc-spec {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .pc-grid-card .pc-badges {
+            margin-top: 5px;
+        }
+
+        .pc-grid-card .pc-actions {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+    .btn-group .btn.active {
+        background: #1e2a38;
+        color: white;
+        border-color: #1e2a38;
+    }
+</style>
+
+<script>
+    const labId = window.currentLabId;
+    let allPcs = [];
+    let currentPerPage = 50;
+    let selectedPcs = new Set();
+
+    function goBack() {
+        fetch('/view/labs.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('page-content').innerHTML = html;
+                document.getElementById('page-content').querySelectorAll('script').forEach(s => {
+                    const newS = document.createElement('script');
+                    newS.text = s.text;
+                    document.body.appendChild(newS).parentNode.removeChild(newS);
+                });
+            });
+    }
+
+    function setPerPage(n, btn) {
+        currentPerPage = n;
+        document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderPcs();
+    }
+
+    function openBulkAdd() {
+        new bootstrap.Modal(document.getElementById('bulkAddModal')).show();
+    }
+
+    function openBulkDelete() {
+        const list = document.getElementById("bulkDeleteList");
+        list.innerHTML = allPcs.map(p => `
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${p.id}" id="del_${p.id}">
+                    <label class="form-check-label small" for="del_${p.id}">${p.assetCode ?? p.id} - ${p.brand}</label>
+                </div>
+            </div>`).join("");
+        new bootstrap.Modal(document.getElementById('bulkDeleteModal')).show();
+    }
+
+    function openBulkEdit() {
+        const list = document.getElementById("bulkEditList");
+        list.innerHTML = allPcs.map(p => `
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${p.id}" id="edit_${p.id}">
+                    <label class="form-check-label small" for="edit_${p.id}">${p.assetCode ?? p.id} - ${p.brand}</label>
+                </div>
+            </div>`).join("");
+        new bootstrap.Modal(document.getElementById('bulkEditModal')).show();
+    }
+
+    async function saveBulkAdd() {
+        const count = parseInt(document.getElementById("bulkCount").value);
+        const type = document.getElementById("bulkType").value;
+        const brand = document.getElementById("bulkBrand").value;
+        const processor = document.getElementById("bulkProcessor").value;
+        const ram = parseInt(document.getElementById("bulkRam").value);
+        const hasHdmi = document.getElementById("bulkHdmi").checked;
+        const hasInternet = document.getElementById("bulkInternet").checked;
+        const hasVeyon = document.getElementById("bulkVeyon").checked;
+
+        for (let i = 0; i < count; i++) {
+            await fetch("/api/admin/computers/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ type, brand, processor, ram, labId, hasHdmi, hasInternet, hasVeyon })
+            });
+        }
+        bootstrap.Modal.getInstance(document.getElementById('bulkAddModal')).hide();
+        getLabDetail();
+    }
+
+    async function deleteSelected() {
+        const checked = document.querySelectorAll('#bulkDeleteList input:checked');
+        for (const cb of checked) {
+            await fetch("/api/admin/computers/" + cb.value, { method: "DELETE" });
+        }
+        bootstrap.Modal.getInstance(document.getElementById('bulkDeleteModal')).hide();
+        getLabDetail();
+    }
+
+    async function saveBulkEdit() {
+        const checked = document.querySelectorAll('#bulkEditList input:checked');
+        const type = document.getElementById("bulkEditType").value;
+        const brand = document.getElementById("bulkEditBrand").value;
+        const processor = document.getElementById("bulkEditProcessor").value;
+        const ram = document.getElementById("bulkEditRam").value;
+
+        for (const cb of checked) {
+            const pc = allPcs.find(p => p.id == cb.value);
+            if (!pc) continue;
+            await fetch(`/api/admin/computers/${pc.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: type || pc.type,
+                    brand: brand || pc.brand,
+                    processor: processor || pc.processor,
+                    ram: ram ? parseInt(ram) : pc.ram,
+                    labId: pc.labId,
+                    hasHdmi: document.getElementById("bulkEditHdmi").checked,
+                    hasInternet: document.getElementById("bulkEditInternet").checked,
+                    hasVeyon: document.getElementById("bulkEditVeyon").checked
+                })
+            });
+        }
+        bootstrap.Modal.getInstance(document.getElementById('bulkEditModal')).hide();
+        getLabDetail();
+    }
+
+    async function getLabDetail() {
+        try {
+            const res = await fetch("/api/admin/labs");
+            const labs = await res.json();
+            const lab = labs.find(l => l.id == labId);
+            if (lab) {
+                document.getElementById("labTitle").innerHTML = `<i class="fas fa-door-open me-2"></i>${lab.name}`;
+                document.getElementById("labInfo").innerHTML = `
+                    <div class="top-bar">
+                        <h5><i class="fas fa-door-open me-2"></i>${lab.name}</h5>
+                        <button class="btn btn-sm btn-outline-warning" onclick="openBulkEdit()">
+                            <i class="fas fa-edit me-1"></i>Toplu Düzenle
+                        </button>
+                    </div>`;
+            }
+            const pcRes = await fetch("/api/admin/computers");
+            const pcs = await pcRes.json();
+            allPcs = pcs.filter(p => p.labId == labId);
+            document.getElementById("pcCount").textContent = `Toplam ${allPcs.length} bilgisayar`;
+            renderPcs();
+        } catch (e) { console.error(e); }
+    }
+
+    function renderPcs() {
+        const pcs = currentPerPage === 9999 ? allPcs : allPcs.slice(0, currentPerPage);
+        const grid = document.getElementById("pcGrid");
+
+        if (pcs.length === 0) {
+            grid.innerHTML = `<div class="col-12 text-center text-muted py-5"><i class="fas fa-laptop fa-3x mb-3 d-block opacity-25"></i>Bu labda henüz bilgisayar yok.</div>`;
+            return;
+        }
+
+        grid.innerHTML = pcs.map(p => `
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div class="pc-grid-card">
+                    <div class="asset-code">${p.assetCode ?? "-"}</div>
+                    <div class="pc-brand">${p.type === 'Laptop' ? '💻' : '🖥️'} ${p.brand}</div>
+                    <div class="pc-spec">${p.processor}</div>
+                    <div class="pc-spec">${p.ram} GB RAM</div>
+                    <div class="pc-badges">
+                        <span class="badge me-1" style="font-size:9px;background:${p.hasHdmi ? '#198754' : '#dee2e6'};color:${p.hasHdmi ? 'white' : '#6c757d'}">HDMI</span>
+                        <span class="badge me-1" style="font-size:9px;background:${p.hasInternet ? '#198754' : '#dee2e6'};color:${p.hasInternet ? 'white' : '#6c757d'}">Net</span>
+                        <span class="badge" style="font-size:9px;background:${p.hasVeyon ? '#198754' : '#dee2e6'};color:${p.hasVeyon ? 'white' : '#6c757d'}">Veyon</span>
+                    </div>
+                    <div class="pc-actions">
+                        <button class="btn btn-warning btn-sm w-100" onclick="openEditModal(${p.id},'${p.type}','${p.brand}','${p.processor}',${p.ram},${p.labId},${p.hasHdmi},${p.hasInternet},${p.hasVeyon})">
+                            <i class="fas fa-edit me-1"></i>Düzenle
+                        </button>
+                        <button class="btn btn-danger btn-sm w-100" onclick="deletePc(${p.id})">
+                            <i class="fas fa-trash me-1"></i>Sil
+                        </button>
+                    </div>
+                </div>
+            </div>`).join("");
+    }
+
+    function openEditModal(id, type, brand, processor, ram, labId, hdmi, internet, veyon) {
+        document.getElementById("editPcId").value = id;
+        document.getElementById("editPcType").value = type;
+        document.getElementById("editPcBrand").value = brand;
+        document.getElementById("editPcProcessor").value = processor;
+        document.getElementById("editPcRam").value = ram;
+        document.getElementById("editPcHdmi").checked = hdmi;
+        document.getElementById("editPcInternet").checked = internet;
+        document.getElementById("editPcVeyon").checked = veyon;
+        new bootstrap.Modal(document.getElementById('editPcModal')).show();
+    }
+
+    async function saveEditPc() {
+        const id = document.getElementById("editPcId").value;
+        await fetch(`/api/admin/computers/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                type: document.getElementById("editPcType").value,
+                brand: document.getElementById("editPcBrand").value,
+                processor: document.getElementById("editPcProcessor").value,
+                ram: parseInt(document.getElementById("editPcRam").value),
+                labId: labId,
+                hasHdmi: document.getElementById("editPcHdmi").checked,
+                hasInternet: document.getElementById("editPcInternet").checked,
+                hasVeyon: document.getElementById("editPcVeyon").checked
+            })
+        });
+        bootstrap.Modal.getInstance(document.getElementById('editPcModal')).hide();
+        getLabDetail();
+    }
+
+    async function deletePc(id) {
+        if (confirm("Silmek istediğinize emin misiniz?")) {
+            await fetch("/api/admin/computers/" + id, { method: "DELETE" });
+            getLabDetail();
+        }
+    }
+
+    getLabDetail();
+</script>

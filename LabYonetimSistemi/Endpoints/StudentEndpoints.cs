@@ -16,8 +16,6 @@ public static class StudentEndpoints
         group.MapPost("/", async (AppDbContext db, Student student) =>
         {
             db.Students.Add(student);
-
-            // Otomatik kullanıcı oluştur
             var yeniKullanici = new User
             {
                 Username = student.Username,
@@ -25,7 +23,6 @@ public static class StudentEndpoints
                 Role = "Student"
             };
             db.Users.Add(yeniKullanici);
-
             await db.SaveChangesAsync();
             return Results.Created($"/api/admin/students/{student.Id}", student);
         });
@@ -38,6 +35,7 @@ public static class StudentEndpoints
             item.FullName = student.FullName;
             item.Grade = student.Grade;
             item.ComputerId = student.ComputerId;
+            item.ComputerIds = student.ComputerIds;
             item.Username = student.Username;
             await db.SaveChangesAsync();
             return Results.NoContent();
@@ -53,7 +51,31 @@ public static class StudentEndpoints
             return Results.NoContent();
         });
 
-        // Öğrencinin zimmetli bilgisayarını getir
+        // Öğrencinin tüm zimmetli bilgisayarlarını getir
+        group.MapGet("/computers/{username}", async (AppDbContext db, string username) =>
+        {
+            var student = await db.Students.FirstOrDefaultAsync(s => s.Username == username);
+            if (student == null) return Results.NotFound();
+
+            var computerIds = new List<int>();
+            if (!string.IsNullOrEmpty(student.ComputerIds))
+            {
+                computerIds = student.ComputerIds.Split(',')
+                    .Where(x => int.TryParse(x.Trim(), out _))
+                    .Select(x => int.Parse(x.Trim()))
+                    .ToList();
+            }
+            if (student.ComputerId > 0 && !computerIds.Contains(student.ComputerId))
+                computerIds.Add(student.ComputerId);
+
+            var computers = await db.Computers
+                .Where(c => computerIds.Contains(c.Id))
+                .ToListAsync();
+
+            return Results.Ok(computers);
+        });
+
+        // Eski endpoint (geriye dönük uyumluluk)
         group.MapGet("/computer/{username}", async (AppDbContext db, string username) =>
         {
             var student = await db.Students.FirstOrDefaultAsync(s => s.Username == username);

@@ -2,6 +2,7 @@
 using LabYonetimSistemi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LabYonetimSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260516121219_AddComputerType")]
+    partial class AddComputerType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -125,10 +128,6 @@ namespace LabYonetimSistemi.Migrations
 
                     b.Property<int>("ComputerId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("ComputerIds")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
                         .IsRequired()
