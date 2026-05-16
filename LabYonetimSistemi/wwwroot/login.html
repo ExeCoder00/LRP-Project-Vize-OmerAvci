@@ -4,38 +4,166 @@
     <meta charset="UTF-8">
     <title>LRP | Giriş</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e2a38, #2c3e50);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 400px;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: #1e2a38;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+            .login-header h3 {
+                color: #4fc3f7;
+                margin: 0;
+                font-weight: 700;
+            }
+
+            .login-header p {
+                color: rgba(255,255,255,0.6);
+                margin: 5px 0 0;
+                font-size: 13px;
+            }
+
+        .login-body {
+            padding: 30px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            border: none;
+            padding: 10px 20px;
+        }
+
+            .nav-tabs .nav-link.active {
+                color: #1e2a38;
+                border-bottom: 2px solid #4fc3f7;
+                font-weight: 600;
+            }
+
+        .form-control:focus {
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 0.2rem rgba(79,195,247,0.25);
+        }
+
+        .btn-login {
+            background: #1e2a38;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+            .btn-login:hover {
+                background: #2c3e50;
+                color: white;
+            }
+
+        .alert-danger {
+            font-size: 13px;
+        }
+    </style>
 </head>
-<body class="bg-light d-flex align-items-center" style="height: 100vh;">
-    <div class="card shadow p-4 mx-auto" style="width: 350px;">
-        <h3 class="text-center text-primary mb-4">LRP Giriş</h3>
-        <form id="loginForm">
-            <input type="text" id="userInput" class="form-control mb-2" placeholder="Kullanıcı Adı" required>
-            <input type="password" id="passInput" class="form-control mb-3" placeholder="Şifre" required>
-            <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-        </form>
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <h3><i class="fas fa-flask me-2"></i>LRP</h3>
+            <p>Laboratuvar Kaynak Planlama Sistemi</p>
+        </div>
+        <div class="login-body">
+            <ul class="nav nav-tabs mb-4" id="loginTabs">
+                <li class="nav-item w-50 text-center">
+                    <a class="nav-link active" id="admin-tab" href="#" onclick="switchTab('admin')">
+                        <i class="fas fa-user-shield me-1"></i>Admin
+                    </a>
+                </li>
+                <li class="nav-item w-50 text-center">
+                    <a class="nav-link" id="student-tab" href="#" onclick="switchTab('student')">
+                        <i class="fas fa-user-graduate me-1"></i>Öğrenci
+                    </a>
+                </li>
+            </ul>
+            <div id="errorMsg" class="alert alert-danger d-none"></div>
+            <div class="mb-3">
+                <label class="form-label text-muted small">Kullanıcı Adı</label>
+                <input type="text" id="userInput" class="form-control" placeholder="Kullanıcı adınızı girin">
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-muted small">Şifre</label>
+                <input type="password" id="passInput" class="form-control" placeholder="Şifrenizi girin">
+            </div>
+            <button class="btn btn-login w-100" onclick="doLogin()">
+                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+            </button>
+        </div>
     </div>
 
     <script>
-        document.getElementById("loginForm").onsubmit = async (e) => {
-            e.preventDefault();
+        let activeTab = 'admin';
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('admin-tab').classList.toggle('active', tab === 'admin');
+            document.getElementById('student-tab').classList.toggle('active', tab === 'student');
+            document.getElementById('errorMsg').classList.add('d-none');
+        }
+
+        async function doLogin() {
+            const username = document.getElementById("userInput").value;
+            const password = document.getElementById("passInput").value;
+
             const res = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: document.getElementById("userInput").value,
-                    password: document.getElementById("passInput").value
-                })
+                body: JSON.stringify({ username, password })
             });
 
             if (res.ok) {
                 const data = await res.json();
                 localStorage.setItem("userRole", data.role);
                 localStorage.setItem("username", data.username);
+
+                if (activeTab === 'admin' && data.role !== 'Admin') {
+                    showError("Bu sekme sadece Admin girişi içindir!");
+                    return;
+                }
+                if (activeTab === 'student' && data.role !== 'Student') {
+                    showError("Bu sekme sadece Öğrenci girişi içindir!");
+                    return;
+                }
+
                 location.href = data.role === "Admin" ? "/index.html" : "/student.html";
             } else {
-                alert("Giriş Başarısız!");
+                showError("Kullanıcı adı veya şifre hatalı!");
             }
-        };
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.classList.remove('d-none');
+        }
+
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doLogin();
+        });
     </script>
 </body>
 </html>

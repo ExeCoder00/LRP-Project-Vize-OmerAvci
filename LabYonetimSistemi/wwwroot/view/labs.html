@@ -1,25 +1,41 @@
-﻿<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>Laboratuvar Yönetimi</h3>
-    <button class="btn btn-primary" onclick="openModal()">Yeni Lab Ekle</button>
+﻿<div class="page-header">
+    <h3><i class="fas fa-door-open me-2"></i>Laboratuvar Yönetimi</h3>
+    <button class="btn btn-primary" onclick="openModal()">
+        <i class="fas fa-plus me-1"></i>Yeni Lab Ekle
+    </button>
 </div>
 
-<table class="table table-hover bg-white shadow-sm rounded">
-    <thead class="table-dark">
-        <tr><th>ID</th><th>İsim</th><th>İşlemler</th></tr>
-    </thead>
-    <tbody id="labTableBody"></tbody>
-</table>
+<div class="table-card">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Lab İsmi</th>
+                <th>PC Sayısı</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody id="labTableBody"></tbody>
+    </table>
+</div>
 
 <div class="modal fade" id="labModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5>Laboratuvar Formu</h5></div>
-            <div class="modal-body">
-                <input type="hidden" id="labId">
-                <input type="text" id="labName" class="form-control" placeholder="Lab İsmi">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#1e2a38; color:white;">
+                <h5 class="modal-title"><i class="fas fa-door-open me-2"></i>Laboratuvar Formu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary w-100" onclick="saveLab()">Kaydet</button>
+            <div class="modal-body p-4">
+                <input type="hidden" id="labId">
+                <label class="form-label text-muted small">Lab İsmi</label>
+                <input type="text" id="labName" class="form-control" placeholder="Örn: Lab-A">
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveLab()">
+                    <i class="fas fa-save me-1"></i>Kaydet
+                </button>
             </div>
         </div>
     </div>
@@ -31,11 +47,16 @@
         const labs = await res.json();
         document.getElementById("labTableBody").innerHTML = labs.map(l => `
             <tr>
-                <td>${l.id}</td>
-                <td>${l.name}</td>
+                <td><span class="badge bg-secondary">${l.id}</span></td>
+                <td><strong>${l.name}</strong></td>
+                <td><span class="badge bg-primary">${l.pcSayisi ?? 0} PC</span></td>
                 <td>
-                    <button class="btn btn-sm btn-warning" onclick="editLab(${l.id},'${l.name}')">Düzenle</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteLab(${l.id})">Sil</button>
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick="editLab(${l.id},'${l.name}')">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteLab(${l.id})">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
                 </td>
             </tr>`).join("");
     }
@@ -57,10 +78,9 @@
         const name = document.getElementById("labName").value;
         const method = id ? "PUT" : "POST";
         const url = id ? `/api/admin/labs/${id}` : "/api/admin/labs/";
-
         await fetch(url, {
             method: method,
-            headers: {"Content-Type":"application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: name })
         });
         bootstrap.Modal.getInstance(document.getElementById('labModal')).hide();
@@ -68,8 +88,8 @@
     }
 
     async function deleteLab(id) {
-        if(confirm("Silmek istediğinize emin misiniz?")) {
-            await fetch("/api/admin/labs/"+id, { method:"DELETE" });
+        if (confirm("Silmek istediğinize emin misiniz?")) {
+            await fetch("/api/admin/labs/" + id, { method: "DELETE" });
             getLabs();
         }
     }

@@ -1,40 +1,88 @@
-﻿<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>Bilgisayar Yönetimi</h3>
-    <button class="btn btn-primary" onclick="openModal()">Yeni Bilgisayar Ekle</button>
+﻿<style>
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .btn-sm {
+        white-space: nowrap;
+    }
+</style>
+
+<div class="page-header">
+    <h3><i class="fas fa-laptop me-2"></i>Bilgisayar Yönetimi</h3>
+    <button class="btn btn-primary" onclick="openModal()">
+        <i class="fas fa-plus me-1"></i>Yeni Bilgisayar Ekle
+    </button>
 </div>
 
-<table class="table table-hover bg-white shadow-sm rounded">
-    <thead class="table-dark">
-        <tr><th>ID</th><th>Demirbaş Kodu</th><th>Marka</th><th>İşlemci</th><th>RAM</th><th>Lab</th><th>İşlemler</th></tr>
-    </thead>
-    <tbody id="pcTableBody"></tbody>
-</table>
+<div class="table-card table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Demirbaş Kodu</th>
+                <th>Marka</th>
+                <th>İşlemci</th>
+                <th>RAM</th>
+                <th>Lab</th>
+                <th>Özellikler</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody id="pcTableBody"></tbody>
+    </table>
+</div>
 
 <div class="modal fade" id="pcModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5>Bilgisayar Formu</h5></div>
-            <div class="modal-body">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#1e2a38; color:white;">
+                <h5 class="modal-title"><i class="fas fa-laptop me-2"></i>Bilgisayar Formu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
                 <input type="hidden" id="pcId">
-                <input type="text" id="pcBrand" class="form-control mb-2" placeholder="Marka">
-                <input type="text" id="pcProcessor" class="form-control mb-2" placeholder="İşlemci">
-                <input type="number" id="pcRam" class="form-control mb-2" placeholder="RAM (GB)">
-                <input type="number" id="pcLabId" class="form-control mb-2" placeholder="Lab ID">
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="pcHdmi">
-                    <label class="form-check-label">HDMI</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="pcInternet">
-                    <label class="form-check-label">İnternet</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="pcVeyon">
-                    <label class="form-check-label">Veyon</label>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Marka</label>
+                        <input type="text" id="pcBrand" class="form-control" placeholder="Dell, HP...">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">İşlemci</label>
+                        <input type="text" id="pcProcessor" class="form-control" placeholder="Intel, AMD...">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">RAM (GB)</label>
+                        <input type="number" id="pcRam" class="form-control" placeholder="8, 16...">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Lab ID</label>
+                        <input type="number" id="pcLabId" class="form-control" placeholder="1, 2...">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Donanım Özellikleri</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pcHdmi">
+                                <label class="form-check-label">HDMI</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pcInternet">
+                                <label class="form-check-label">İnternet</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pcVeyon">
+                                <label class="form-check-label">Veyon</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary w-100" onclick="savePc()">Kaydet</button>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="savePc()">
+                    <i class="fas fa-save me-1"></i>Kaydet
+                </button>
             </div>
         </div>
     </div>
@@ -46,15 +94,24 @@
         const pcs = await res.json();
         document.getElementById("pcTableBody").innerHTML = pcs.map(p => `
             <tr>
-                <td>${p.id}</td>
-                <td>${p.assetCode ?? "-"}</td>
-                <td>${p.brand}</td>
+                <td><span class="badge bg-secondary">${p.id}</span></td>
+                <td><code>${p.assetCode ?? "-"}</code></td>
+                <td><strong>${p.brand}</strong></td>
                 <td>${p.processor}</td>
-                <td>${p.ram} GB</td>
-                <td>${p.labId}</td>
+                <td><span class="badge bg-info text-dark">${p.ram} GB</span></td>
+                <td><span class="badge bg-primary">Lab ${p.labId}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-warning" onclick="editPc(${p.id},'${p.brand}','${p.processor}',${p.ram},${p.labId},${p.hasHdmi},${p.hasInternet},${p.hasVeyon})">Düzenle</button>
-                    <button class="btn btn-sm btn-danger" onclick="deletePc(${p.id})">Sil</button>
+                    ${p.hasHdmi ? '<span class="badge bg-success me-1">HDMI</span>' : ''}
+                    ${p.hasInternet ? '<span class="badge bg-success me-1">Net</span>' : ''}
+                    ${p.hasVeyon ? '<span class="badge bg-success">Veyon</span>' : ''}
+                </td>
+                <td style="white-space:nowrap;">
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick="editPc(${p.id},'${p.brand}','${p.processor}',${p.ram},${p.labId},${p.hasHdmi},${p.hasInternet},${p.hasVeyon})">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deletePc(${p.id})">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
                 </td>
             </tr>`).join("");
     }
@@ -87,10 +144,9 @@
         const id = document.getElementById("pcId").value;
         const method = id ? "PUT" : "POST";
         const url = id ? `/api/admin/computers/${id}` : "/api/admin/computers/";
-
         await fetch(url, {
             method: method,
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 brand: document.getElementById("pcBrand").value,
                 processor: document.getElementById("pcProcessor").value,
@@ -106,8 +162,8 @@
     }
 
     async function deletePc(id) {
-        if(confirm("Silmek istediğinize emin misiniz?")) {
-            await fetch("/api/admin/computers/"+id, { method: "DELETE" });
+        if (confirm("Silmek istediğinize emin misiniz?")) {
+            await fetch("/api/admin/computers/" + id, { method: "DELETE" });
             getPcs();
         }
     }

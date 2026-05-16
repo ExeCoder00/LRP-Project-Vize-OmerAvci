@@ -1,15 +1,30 @@
-﻿<h2 class="mb-4">Sistem Özeti</h2>
-<div class="row g-4">
+﻿<div class="page-header">
+    <h3><i class="fas fa-chart-pie me-2"></i>Sistem Özeti</h3>
+</div>
+
+<div class="row g-4 mb-4">
     <div class="col-md-3">
-        <div class="card bg-primary text-white p-3 shadow-sm border-0">
-            <h6>Laboratuvarlar</h6>
+        <div class="stat-card" style="background: linear-gradient(135deg, #1e2a38, #2c3e50);">
+            <h6><i class="fas fa-door-open me-1"></i>Laboratuvarlar</h6>
             <h2 id="stat-labs">0</h2>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-success text-white p-3 shadow-sm border-0">
-            <h6>Bilgisayarlar</h6>
+        <div class="stat-card" style="background: linear-gradient(135deg, #0077b6, #023e8a);">
+            <h6><i class="fas fa-laptop me-1"></i>Bilgisayarlar</h6>
             <h2 id="stat-pcs">0</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #1b4332);">
+            <h6><i class="fas fa-user-graduate me-1"></i>Öğrenciler</h6>
+            <h2 id="stat-students">0</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #c1121f, #780000);">
+            <h6><i class="fas fa-exclamation-triangle me-1"></i>Açık Sorunlar</h6>
+            <h2 id="stat-issues">0</h2>
         </div>
     </div>
 </div>
@@ -20,5 +35,7 @@
         const data = await res.json();
         document.getElementById("stat-labs").innerText = data.labCount;
         document.getElementById("stat-pcs").innerText = data.pcCount;
+        document.getElementById("stat-students").innerText = data.studentCount;
+        document.getElementById("stat-issues").innerText = data.issueCount;
     })();
 </script>

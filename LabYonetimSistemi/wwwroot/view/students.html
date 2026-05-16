@@ -1,28 +1,62 @@
-﻿<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>Öğrenci Yönetimi</h3>
-    <button class="btn btn-primary" onclick="openModal()">Yeni Öğrenci Ekle</button>
+﻿<div class="page-header">
+    <h3><i class="fas fa-user-graduate me-2"></i>Öğrenci Yönetimi</h3>
+    <button class="btn btn-primary" onclick="openModal()">
+        <i class="fas fa-plus me-1"></i>Yeni Öğrenci Ekle
+    </button>
 </div>
 
-<table class="table table-hover bg-white shadow-sm rounded">
-    <thead class="table-dark">
-        <tr><th>ID</th><th>Ad Soyad</th><th>Sınıf</th><th>Kullanıcı Adı</th><th>Bilgisayar ID</th><th>İşlemler</th></tr>
-    </thead>
-    <tbody id="studentTableBody"></tbody>
-</table>
+<div class="table-card">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ad Soyad</th>
+                <th>Sınıf</th>
+                <th>Kullanıcı Adı</th>
+                <th>Bilgisayar ID</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody id="studentTableBody"></tbody>
+    </table>
+</div>
 
 <div class="modal fade" id="studentModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5>Öğrenci Formu</h5></div>
-            <div class="modal-body">
-                <input type="hidden" id="studentId">
-                <input type="text" id="studentFullName" class="form-control mb-2" placeholder="Ad Soyad">
-                <input type="number" id="studentGrade" class="form-control mb-2" placeholder="Sınıf (1 veya 2)">
-                <input type="text" id="studentUsername" class="form-control mb-2" placeholder="Kullanıcı Adı (Öğrenci No)">
-                <input type="number" id="studentComputerId" class="form-control mb-2" placeholder="Bilgisayar ID">
+        <div class="modal-content border-0" style="border-radius:12px; overflow:hidden;">
+            <div class="modal-header" style="background:#1e2a38; color:white;">
+                <h5 class="modal-title"><i class="fas fa-user-graduate me-2"></i>Öğrenci Formu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary w-100" onclick="saveStudent()">Kaydet</button>
+            <div class="modal-body p-4">
+                <input type="hidden" id="studentId">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Ad Soyad</label>
+                        <input type="text" id="studentFullName" class="form-control" placeholder="Öğrenci adı soyadı">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Sınıf</label>
+                        <select id="studentGrade" class="form-select">
+                            <option value="1">1. Sınıf</option>
+                            <option value="2">2. Sınıf</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small">Kullanıcı Adı (Öğrenci No)</label>
+                        <input type="text" id="studentUsername" class="form-control" placeholder="Öğrenci no">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Bilgisayar ID</label>
+                        <input type="number" id="studentComputerId" class="form-control" placeholder="Zimmetli bilgisayar ID">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button class="btn btn-primary" onclick="saveStudent()">
+                    <i class="fas fa-save me-1"></i>Kaydet
+                </button>
             </div>
         </div>
     </div>
@@ -34,14 +68,18 @@
         const students = await res.json();
         document.getElementById("studentTableBody").innerHTML = students.map(s => `
             <tr>
-                <td>${s.id}</td>
-                <td>${s.fullName}</td>
-                <td>${s.grade}</td>
-                <td>${s.username}</td>
-                <td>${s.computerId}</td>
+                <td><span class="badge bg-secondary">${s.id}</span></td>
+                <td><strong>${s.fullName}</strong></td>
+                <td><span class="badge bg-info text-dark">${s.grade}. Sınıf</span></td>
+                <td><code>${s.username}</code></td>
+                <td><span class="badge bg-primary">PC #${s.computerId}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-warning" onclick="editStudent(${s.id},'${s.fullName}',${s.grade},'${s.username}',${s.computerId})">Düzenle</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteStudent(${s.id})">Sil</button>
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(${s.id},'${s.fullName}',${s.grade},'${s.username}',${s.computerId})">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(${s.id})">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
                 </td>
             </tr>`).join("");
     }
@@ -49,7 +87,7 @@
     function openModal() {
         document.getElementById("studentId").value = "";
         document.getElementById("studentFullName").value = "";
-        document.getElementById("studentGrade").value = "";
+        document.getElementById("studentGrade").value = "1";
         document.getElementById("studentUsername").value = "";
         document.getElementById("studentComputerId").value = "";
         new bootstrap.Modal(document.getElementById('studentModal')).show();
@@ -68,10 +106,9 @@
         const id = document.getElementById("studentId").value;
         const method = id ? "PUT" : "POST";
         const url = id ? `/api/admin/students/${id}` : "/api/admin/students/";
-
         await fetch(url, {
             method: method,
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 fullName: document.getElementById("studentFullName").value,
                 grade: parseInt(document.getElementById("studentGrade").value),
@@ -84,8 +121,8 @@
     }
 
     async function deleteStudent(id) {
-        if(confirm("Silmek istediğinize emin misiniz?")) {
-            await fetch("/api/admin/students/"+id, { method: "DELETE" });
+        if (confirm("Silmek istediğinize emin misiniz?")) {
+            await fetch("/api/admin/students/" + id, { method: "DELETE" });
             getStudents();
         }
     }
