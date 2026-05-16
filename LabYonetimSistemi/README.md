@@ -128,16 +128,50 @@ Tüm endpoint'lerin test edilebileceği API dokümantasyonu.
 
 ------------------
 ## Proje Yapısı
-
+```
 LabYonetimSistemi/
-├── Data/              AppDbContext
-├── Endpoints/         Auth, Lab, PC, Student, Issue endpoint'leri
-├── Migrations/        EF Core migration'ları
-├── Models/            Computer, Lab, Student, User, Issue
+│
+├── Data/
+│   └── AppDbContext.cs              # EF Core veritabanı bağlantısı ve DbSet tanımları
+│
+├── Endpoints/
+│   ├── AuthEndpoints.cs             # Login ve rol bazlı giriş işlemleri
+│   ├── LabEndpoints.cs              # Laboratuvar CRUD işlemleri
+│   ├── PcEndpoints.cs               # Bilgisayar CRUD ve AssetCode üretimi
+│   ├── StudentEndpoints.cs          # Öğrenci atama ve öğrenci portalı işlemleri
+│   ├── IssueEndpoints.cs            # Arıza / sorun kayıt işlemleri
+│   └── StatEndpoints.cs             # Dashboard istatistik endpointleri
+│
+├── Migrations/
+│   └── ...                          # EF Core Code-First migration dosyaları
+│
+├── Models/
+│   ├── Computer.cs                  # Bilgisayar modeli
+│   ├── Issue.cs                     # Arıza / sorun modeli
+│   ├── Lab.cs                       # Laboratuvar modeli
+│   ├── Software.cs                  # Yazılım modeli
+│   ├── Student.cs                   # Öğrenci modeli
+│   └── User.cs                      # Kullanıcı ve rol modeli
+│
 ├── wwwroot/
-│   ├── view/          dashboard, labs, computers, students, issues, lab-detail
-│   ├── index.html     Admin SPA
-│   ├── student.html   Öğrenci portalı
-│   ├── login.html     Giriş ekranı
-│   └── style.css      Ortak stiller
-└── Program.cs         Uygulama yapılandırması
+│   ├── view/
+│   │   ├── dashboard.html           # Admin dashboard içerik sayfası
+│   │   ├── labs.html                # Laboratuvar yönetim sayfası
+│   │   ├── computers.html           # Bilgisayar yönetim sayfası
+│   │   ├── students.html            # Öğrenci / zimmet yönetim sayfası
+│   │   ├── issues.html              # Arıza kayıt ve takip sayfası
+│   │   └── lab-detail.html          # Laboratuvar detay sayfası
+│   │
+│   ├── admin.html                   # Admin panel ana sayfası / SPA şablonu
+│   ├── index.html                   # Admin yönlendirme / ana giriş sayfası
+│   ├── login.html                   # Kullanıcı giriş ekranı
+│   ├── student.html                 # Öğrenci portalı
+│   └── style.css                    # Ortak CSS stilleri
+│
+├── .gitignore                       # bin, obj ve .db gibi dosyaları hariç tutar
+├── appsettings.json                 # Uygulama ayarları
+├── LabYonetimSistemi.http           # API test istekleri
+├── Program.cs                       # Uygulama başlangıç ve endpoint kayıtları
+└── README.md                        # Proje açıklaması ve çalıştırma bilgileri
+```
+ 
